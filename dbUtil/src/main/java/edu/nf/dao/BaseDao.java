@@ -1,4 +1,4 @@
-package dao;
+package edu.nf.dao;
 
 import java.sql.*;
 
