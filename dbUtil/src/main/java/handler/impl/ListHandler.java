@@ -19,6 +19,7 @@ public class ListHandler implements ResultSetHandler {
         return toList(clz,resultSet);
     }
 
+    //List单表
     public static <T> List<T> toList(Class<?> clz, ResultSet rs) throws Exception {
         List<T> list = new ArrayList<T>();
         while(rs.next()){
