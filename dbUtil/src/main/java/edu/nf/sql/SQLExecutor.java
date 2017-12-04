@@ -84,6 +84,7 @@ public class SQLExecutor {
 
     }
 
+    //单表List
     public <T> List<T> getList(String sql,Class<?> clz,Object... param) throws Exception {
         check(sql,conn);
         PreparedStatement ps = conn.prepareStatement(sql);
