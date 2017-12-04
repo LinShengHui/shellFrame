@@ -1,8 +1,8 @@
 package edu.nf.sql;
 
-import handler.impl.ArrayListHandler;
+import handler.impl.ListMapHandler;
 import handler.impl.BeanHandler;
-import handler.impl.ListHandler;
+import handler.impl.ObjListHandler;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,7 +30,7 @@ public class SQLExecutor {
         return  row;
     }
 
-    //查询学生返回对象
+    //查询根据IT查询学生
     public static<T> T getsingleBean(Class clazz,String sql,Object...param) throws Exception {
         check(sql,conn);
         PreparedStatement ps= conn.prepareStatement(sql);
@@ -41,14 +41,24 @@ public class SQLExecutor {
        return  t;
     }
 
-    //查询全部学生返回list
+    //单表List
+    public <T> List<T> getList(String sql,Class<?> clz,Object... param) throws Exception {
+        check(sql,conn);
+        PreparedStatement ps = conn.prepareStatement(sql);
+        setPreparedStatemen(ps,param);
+        ResultSet rs = ps.executeQuery();
+        //交给List处理，返回一个自定义类型
+        List<T> list = (List<T>)new ObjListHandler(clz).handler(rs);
+        return list;
+    }
+
+    //多表查询返回list
     public static List getSingleList(String sql,Object...param) throws Exception {
         check(sql,conn);
         PreparedStatement ps= conn.prepareStatement(sql);
-       // setPreparedStatemen(ps,param);//给占位符赋值
         ResultSet rs = ps.executeQuery();
         //交给List处理，返回一个自定义类型
-       List list = (List) new ArrayListHandler().handler(rs);
+       List list = (List) new ListMapHandler().handler(rs);
         return list;
     }
 
@@ -84,15 +94,7 @@ public class SQLExecutor {
 
     }
 
-    //单表List
-    public <T> List<T> getList(String sql,Class<?> clz,Object... param) throws Exception {
-        check(sql,conn);
-        PreparedStatement ps = conn.prepareStatement(sql);
-        setPreparedStatemen(ps,param);
-        ResultSet rs = ps.executeQuery();
-        List<T> list = (List<T>)new ListHandler(clz).handler(rs);
-        return list;
-    }
+
     //insert bean list map
 
     // 1、参数  conncetion 不同的数据库

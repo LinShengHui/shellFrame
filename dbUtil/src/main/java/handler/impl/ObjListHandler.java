@@ -10,9 +10,9 @@ import java.util.List;
 /**
  * Created by Administrator on 2017/12/4.
  */
-public class ListHandler implements ResultSetHandler {
+public class ObjListHandler implements ResultSetHandler {
     private Class<?> clz;
-    public ListHandler(Class<?> clz){
+    public ObjListHandler(Class<?> clz){
         this.clz = clz;
     }
     public Object handler(ResultSet resultSet) throws Exception {
@@ -20,7 +20,7 @@ public class ListHandler implements ResultSetHandler {
     }
 
     //List单表
-    public static <T> List<T> toList(Class<?> clz, ResultSet rs) throws Exception {
+    private static <T> List<T> toList(Class<?> clz, ResultSet rs) throws Exception {
         List<T> list = new ArrayList<T>();
         while(rs.next()){
             Object obj = clz.newInstance();
