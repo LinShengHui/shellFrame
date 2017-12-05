@@ -22,18 +22,33 @@ public class SQLExecutor {
     }
 
     //添加学生信息
-    public static int addStu(String sql,Object...param) throws SQLException {
+    public static int zsgObj(String sql,Object...param) throws SQLException {
         check(sql,conn);//检查数据库是否已经关闭
-        PreparedStatement ps= conn.prepareStatement(sql);
-        setPreparedStatemen(ps,param);
-        int row = ps.executeUpdate();
+        PreparedStatement ps= conn.prepareStatement(sql);//预编译
+        setPreparedStatemen(ps,param);//未占位符赋值
+        int row = ps.executeUpdate();//执行语句返回一个int
         return  row;
     }
 
-    //查询根据IT查询学生
+    //批量删除
+    public static boolean deleteObj(String sql,Object...param) throws SQLException {
+        check(sql,conn);//检查关闭
+        if (param!=null&&param.length>0){//判断传过来值
+            for (int i=0;i<param.length;i++){//遍历传过来的值，进行删除
+               int z = zsgObj( sql,param[i]);//调用增删改方法，传遍历的ID
+            }
+            return true;
+        }
+        return false;
+
+    }
+
+
+
+    //查询根据IT查询学生，使用对象保存
     public static<T> T getsingleBean(Class clazz,String sql,Object...param) throws Exception {
-        check(sql,conn);
-        PreparedStatement ps= conn.prepareStatement(sql);
+        check(sql,conn);//检查关闭
+        PreparedStatement ps= conn.prepareStatement(sql);//预编译
         setPreparedStatemen(ps,param);//给占位符赋值
         ResultSet rs = ps.executeQuery();
         //交给对象处理，返回一个自定义类型
@@ -41,7 +56,7 @@ public class SQLExecutor {
        return  t;
     }
 
-    //单表List
+    //查询全部学生单表，使用List
     public <T> List<T> getList(String sql,Class<?> clz,Object... param) throws Exception {
         check(sql,conn);
         PreparedStatement ps = conn.prepareStatement(sql);
@@ -52,7 +67,7 @@ public class SQLExecutor {
         return list;
     }
 
-    //多表查询返回list
+    //多表查询返回list(map(k,v))
     public static List getSingleList(String sql,Object...param) throws Exception {
         check(sql,conn);
         PreparedStatement ps= conn.prepareStatement(sql);
