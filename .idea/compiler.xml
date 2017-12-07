@@ -7,10 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="dbUtil" />
+        <module name="IOC" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="dbUtil" target="1.5" />
+      <module name="IOC" target="1.5" />
       <module name="shellFrame" target="1.5" />
       <module name="test" target="1.5" />
     </bytecodeTargetLevel>

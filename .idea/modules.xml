@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/IOC/IOC.iml" filepath="$PROJECT_DIR$/IOC/IOC.iml" />
       <module fileurl="file://$PROJECT_DIR$/dbUtil/dbUtil.iml" filepath="$PROJECT_DIR$/dbUtil/dbUtil.iml" />
       <module fileurl="file://$PROJECT_DIR$/shellFrame.iml" filepath="$PROJECT_DIR$/shellFrame.iml" />
     </modules>

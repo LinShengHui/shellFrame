@@ -1,8 +1,5 @@
 package edu.nf;
 
-import edu.nf.dao.BaseDao;
-import edu.nf.sql.SQLExecutor;
-
 /**
  * Created by Administrator on 2017/11/30.
  */
@@ -26,11 +23,13 @@ public class Main {
        List<Stu> list = sqlExecutor.getList(sql, Stu.class);
         System.out.println("查询到："+list.size());*/
 
+        //单条记录 数组
 
-        //添加学生
+
+        /*//添加学生
         String sql  = "insert into tb_stu values(?,?,?)";
         int i  = new SQLExecutor(BaseDao.getConnection()).zsgObj(sql,1,"Tome","男");
-        System.out.println(i);
+        System.out.println(i);*/
 
         //根据ID 123批量删除学生
       /*  String sql = "delete FROM tb_stu where s_no = ? ";

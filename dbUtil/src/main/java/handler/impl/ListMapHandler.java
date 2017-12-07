@@ -16,7 +16,7 @@ import java.util.Map;
 public class ListMapHandler implements ResultSetHandler {
 
 
-
+    //给一个公开方法
     public Object handler(ResultSet rs) throws Exception {
         return objList(rs);
     }
@@ -31,7 +31,6 @@ public class ListMapHandler implements ResultSetHandler {
             rowData = new HashMap(columnCount);//new以个HashMap,长度未columnCount 就是对象的列速，如 String[] str = new String[5] 一样
             for (int i=1 ; i<= columnCount;i++){//循环遍历，将一行数据保存到Map里面
                 rowData.put(mataData.getColumnName(i), rs.getObject(i));//一个一个赋值
-
             }
             list.add(rowData);//将一行数据保存到List中去
         }

@@ -78,6 +78,7 @@ public class SQLExecutor {
     }
 
 
+
     /**
      * 检查关闭
      * @param sql
