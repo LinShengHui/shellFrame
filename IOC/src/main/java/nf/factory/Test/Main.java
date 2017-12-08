@@ -1,4 +1,4 @@
-package nf.factory.TestService;
+package nf.factory.Test;
 
 import nf.factory.Factory.ContainerFactory;
 
@@ -9,6 +9,6 @@ public class Main {
     public static void main(String[] args) throws Exception {
         ContainerFactory cft = new ContainerFactory();
         StuDao dao2= (StuDao) cft.getBean("dao");
-        System.out.println(dao2+"111");
+        dao2.findStu();
     }
 }

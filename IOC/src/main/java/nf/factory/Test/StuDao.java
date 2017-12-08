@@ -1,4 +1,4 @@
-package nf.factory.TestService;
+package nf.factory.Test;
 
 import nf.factory.annotation.Component;
 import nf.factory.annotation.Scope;
@@ -9,4 +9,8 @@ import nf.factory.annotation.Scope;
 @Component("dao")
 @Scope("singleton")
 public class StuDao {
+
+    public void findStu(){
+        System.out.println("select * from stu");
+    }
 }

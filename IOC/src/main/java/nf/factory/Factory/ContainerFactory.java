@@ -37,8 +37,8 @@ public class ContainerFactory {
     public static void initProtoType() throws Exception {
         //扫描目录下的带有注解
         List<String> list = null;
-
             list = ScanFileUtil.scan(packageUrl);
+
             for (String clazz : list) {
                 Class cls = Class.forName(clazz);
                 //获取column的值
@@ -106,8 +106,7 @@ public class ContainerFactory {
         if (cls.isAnnotationPresent(Component.class)) {
             //获取注解上的值
             Component columnName = (Component) cls.getAnnotation(Component.class);
-            String columnClassValues = columnName.value();
-            return columnClassValues;
+            return columnName.value();
         }
         return null;
     }
@@ -117,8 +116,7 @@ public class ContainerFactory {
         if (cls.isAnnotationPresent(Scope.class)) {
             //获取注解上的值
             Scope columnName = (Scope) cls.getAnnotation(Scope.class);
-            String scopeClassValues = columnName.value();
-            return scopeClassValues;
+            return columnName.value();
         }
         return null;
     }

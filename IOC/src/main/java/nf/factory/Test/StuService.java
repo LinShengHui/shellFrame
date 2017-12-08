@@ -1,4 +1,4 @@
-package nf.factory.TestService;
+package nf.factory.Test;
 
 import nf.factory.annotation.Component;
 
