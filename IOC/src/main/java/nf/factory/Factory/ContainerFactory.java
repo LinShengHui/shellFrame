@@ -3,8 +3,10 @@ package nf.factory.Factory;
 import nf.factory.Definition;
 import nf.factory.Util.ScanFileUtil;
 import nf.factory.annotation.Component;
+import nf.factory.annotation.Inject;
 import nf.factory.annotation.Scope;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,12 +94,13 @@ public class ContainerFactory {
 
     private Object getContainerBean(String name) {
         //作用域熟悉
+        Object obj = null;
         String scope = prototype.get(name).getScope();
-        try {
-            return ("singleton".equals(scope)) ? singleton.get(name) : Class.forName(prototype.get(name).getClassName()).newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        obj = ("singleton".equals(scope)) ? singleton.get(name) : centerBen(prototype.get(name).getClassName());
+        //进行注入
+        Csanmethod(obj);
+        return obj;
+
     }
 
 
@@ -124,6 +127,61 @@ public class ContainerFactory {
 
     public static void main(String[] args) throws Exception {
         initProtoType();
+    }
+
+    //注入
+    private static void Csanmethod(Object obj) {
+        //获取对象的Class
+        Class cls = obj.getClass();
+        //获取所有的熟悉
+        Field[] fields = cls.getDeclaredFields();
+        for (Field f:fields) {//遍历熟悉
+            if(f.isAnnotationPresent(Inject.class)){//判断有没有这个注解
+                //打开私有方法
+                f.setAccessible(true);
+                //获取字段上的值
+                String methodName=f.getAnnotation(Inject.class).value();
+                //判断类型进行注入
+                if(prototype.containsKey(methodName)){
+                    Object beanData = null;
+                    //创建一个实例
+                    beanData =centerBen(prototype.get(methodName).getClassName());
+                    //注入
+                    manageSetBenException(f,obj,beanData);
+                }else if (singleton.containsKey(methodName)){
+                    manageSetBenException(f,obj,singleton.get(methodName));
+
+                }
+            }
+        }
+    }
+
+    //对类型进行判断注入
+    private static void injectjudgeType(String methodName,Field field,Object beanObj){
+
+    }
+
+    //处理给字段赋值异常
+    public static  void manageSetBenException(Field file,Object bean,Object beanData){
+        try {
+            file.set(bean,beanData);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //处理newInstance带来在异常
+    public static Object centerBen(String full){
+        try {
+            return  Class.forName(full).newInstance();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

@@ -8,7 +8,7 @@ import nf.factory.annotation.Scope;
  */
 @Component("dao")
 @Scope("singleton")
-public class StuDao {
+public class StuDao implements IStuDao {
 
     public void findStu(){
         System.out.println("select * from stu");
