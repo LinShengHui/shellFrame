@@ -8,5 +8,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME) //运行时一直保留注解
 @Target(ElementType.TYPE) //定义在字段上面
 public @interface Component {
-    String value();
+    String value() default "";
 }

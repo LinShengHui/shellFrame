@@ -11,32 +11,32 @@ import java.util.List;
  */
 public class ScanFileUtil {
 
-    //获取当前项目的绝对路径
-    private static String path = null;
+    //项目路径 用于后面的解析完整类名使用
+    private static String path = "";
 
     //定义一个list集合，用于存放所有类的完整类名
     private static List<String> list = new ArrayList<String>();
 
 
-
     //默认路径
-   public static  List scan() throws ClassNotFoundException {
-       readFile(path);
+   public static  List scan()   {
+       //扫描文件的方法 传入处理过的path路径
+       readFile(urlutf8(path));
        return list;
    }
 
     //指定包名路径
-    public static List scan(String url) throws ClassNotFoundException {
+    public static List scan(String url) {
         url = url.replace(".","/");
-         url = urlutf8(url);
-        readFile(url);
+        readFile( urlutf8(url));
         return list;
     }
     /**
      * 读取clss文件信息
      * @param
      */
-    private static void readFile(String paths) throws ClassNotFoundException {
+    private static void readFile(String paths)  {
+        System.out.println("处理后的路径？"+paths);
         File f = new File(paths);
         File[] files = f.listFiles();
         if(files!=null){
@@ -57,10 +57,14 @@ public class ScanFileUtil {
     public static String urlutf8(String pathurl){
         String url = null;
         try {
+            //根据当前线程的执行类获取当前路径
             url =Thread.currentThread().getContextClassLoader().getResource(pathurl).getPath();
+            //如果你的路径有中文，则需要进行中文处理
             url = URLDecoder.decode(url,"utf-8");
+            //为全局变量赋值
             path =Thread.currentThread().getContextClassLoader().getResource("").getPath();
             path = URLDecoder.decode(path,"utf-8");
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -86,7 +90,7 @@ public class ScanFileUtil {
     }
 
     public static void main(String[] args) throws ClassNotFoundException {
-        scan("nf");
+        scan("nf.factory.entity");
        // readFile(path);
     }
 }

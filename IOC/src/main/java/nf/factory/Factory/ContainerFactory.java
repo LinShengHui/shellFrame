@@ -7,6 +7,7 @@ import nf.factory.annotation.Inject;
 import nf.factory.annotation.Scope;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,17 @@ public class ContainerFactory {
     public ContainerFactory() throws Exception {
         initProtoType();
         initSingleton();
+        //注入单例
+        injectsingleton();
+    }
+
+    //注入
+    private void injectsingleton(){
+        Collection collection = singleton.values();
+        for(Object bean : collection){
+            System.out.println(bean);
+            InjectSericerHandler.setInject(bean.getClass(),bean);
+        }
     }
 
     //重载一个构造方法
@@ -36,18 +48,18 @@ public class ContainerFactory {
         initSingleton();
     }
 
-    public static void initProtoType() throws Exception {
+    //初始化原型容器
+    public static void initProtoType() {
         //扫描目录下的带有注解
         List<String> list = null;
-            list = ScanFileUtil.scan(packageUrl);
-
-            for (String clazz : list) {
-                Class cls = Class.forName(clazz);
-                //获取column的值
-                String columnClassValues = componentValue(cls);
-                if(columnClassValues!=null&&columnClassValues.length()>0){
-                 //获取scope的值
-                 String scope = scopeValue(cls);
+        list = ScanFileUtil.scan(packageUrl);
+        for (String clazz : list) {
+            Class cls = manageGainClass(clazz);
+            //获取column的值
+            String columnClassValues = componentValue(cls);
+            if(columnClassValues!=null&&columnClassValues.length()>0){
+                //获取scope的值
+                String scope = scopeValue(cls);
                 //获取完整类名
                 String ClassName = cls.getCanonicalName();
                 //构建bean的定义
@@ -55,15 +67,15 @@ public class ContainerFactory {
                 def.setId(columnClassValues);
                 def.setClassName(ClassName);
                 //如果scop有值
-                if (scope != null && scope.length() > 0) {
-                    def.setScope(scope);
-                }
+                def.setScope(scope);
+
                 //保存到容器中
                 prototype.put(columnClassValues, def);
-               }
             }
+        }
 
     }
+
 
 
     //初始化单例
@@ -83,22 +95,32 @@ public class ContainerFactory {
         }
     }
 
-    public Object getBean(String name) {
+    public static Object getBean(String name) {
         return  getContainerBean(name);
     }
 
-    public <T> T getBean(String name, Class<T> clazz) {
+    public static  <T> T getBean(String name, Class<T> clazz) {
         return (T) getContainerBean(name);
     }
 
-
-    private Object getContainerBean(String name) {
-        //作用域熟悉
+    //注入
+    private static Object getContainerBean(String name) {
+        //作用域属性
         Object obj = null;
-        String scope = prototype.get(name).getScope();
-        obj = ("singleton".equals(scope)) ? singleton.get(name) : centerBen(prototype.get(name).getClassName());
+        // String scope = prototype.get(name).getScope();
+        if(singleton.containsKey(name)){
+            obj = singleton.get(name);
+        }else if(prototype.containsKey(name)){
+            obj = manageCenterBen(prototype.get(name).getClassName());
+            InjectSericerHandler.setInject(obj.getClass(),obj);
+        }
+
+        // obj = ("singleton".equals(scope)) ? singleton.get(name) : centerBen(prototype.get(name).getClassName());
         //进行注入
-        Csanmethod(obj);
+        /*if(!"singleton".equals(scope)){
+
+        }*/
+        //Csanmethod(obj);
         return obj;
 
     }
@@ -106,10 +128,16 @@ public class ContainerFactory {
 
     //判断component注解
     private static String componentValue(Class cls) {
-        if (cls.isAnnotationPresent(Component.class)) {
-            //获取注解上的值
-            Component columnName = (Component) cls.getAnnotation(Component.class);
-            return columnName.value();
+
+        if(cls.isAnnotationPresent(Component.class)){
+            Component component= (Component) cls.getAnnotation(Component.class);
+            String componentName =  component.value();
+            if(componentName==null||componentName.length()<=0){
+                componentName=toLowerCaseFirstOne(cls.getSimpleName());
+                System.out.println(componentName);
+                return componentName;
+            }
+            return componentName;
         }
         return null;
     }
@@ -118,16 +146,13 @@ public class ContainerFactory {
     private static String scopeValue(Class cls) {
         if (cls.isAnnotationPresent(Scope.class)) {
             //获取注解上的值
-            Scope columnName = (Scope) cls.getAnnotation(Scope.class);
-            return columnName.value();
+            Scope scopeName = (Scope) cls.getAnnotation(Scope.class);
+            return scopeName.value();
         }
-        return null;
+        return "singleton";
     }
 
 
-    public static void main(String[] args) throws Exception {
-        initProtoType();
-    }
 
     //注入
     private static void Csanmethod(Object obj) {
@@ -145,7 +170,7 @@ public class ContainerFactory {
                 if(prototype.containsKey(methodName)){
                     Object beanData = null;
                     //创建一个实例
-                    beanData =centerBen(prototype.get(methodName).getClassName());
+                    beanData =manageCenterBen(prototype.get(methodName).getClassName());
                     //注入
                     manageSetBenException(f,obj,beanData);
                 }else if (singleton.containsKey(methodName)){
@@ -156,10 +181,10 @@ public class ContainerFactory {
         }
     }
 
-    //对类型进行判断注入
-    private static void injectjudgeType(String methodName,Field field,Object beanObj){
 
-    }
+
+
+    //————————————————————————异常处理————————————————————————————————//
 
     //处理给字段赋值异常
     public static  void manageSetBenException(Field file,Object bean,Object beanData){
@@ -171,7 +196,7 @@ public class ContainerFactory {
     }
 
     //处理newInstance带来在异常
-    public static Object centerBen(String full){
+    public static Object manageCenterBen(String full){
         try {
             return  Class.forName(full).newInstance();
         } catch (ClassNotFoundException e) {
@@ -184,4 +209,22 @@ public class ContainerFactory {
         return null;
     }
 
+    //给ClassFromName抛异常
+    public static Class manageGainClass(String className){
+        try {
+            Class cls = Class.forName(className);
+            return cls;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //首字母转小写
+    public static String toLowerCaseFirstOne(String s){
+        if(Character.isLowerCase(s.charAt(0)))
+            return s;
+        else
+            return (new StringBuilder()).append(Character.toLowerCase(s.charAt(0))).append(s.substring(1)).toString();
+    }
 }
